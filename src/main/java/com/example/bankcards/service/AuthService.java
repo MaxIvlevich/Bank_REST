@@ -2,8 +2,10 @@ package com.example.bankcards.service;
 
 import com.example.bankcards.dto.request.LoginRequest;
 import com.example.bankcards.dto.request.RegistrationRequest;
-import com.example.bankcards.dto.response.UserResponseDto;
+import com.example.bankcards.dto.request.TokenRefreshRequest;
 import com.example.bankcards.dto.response.JwtResponse;
+import com.example.bankcards.dto.response.TokenRefreshResponse;
+import com.example.bankcards.dto.response.UserResponseDto;
 
 public interface AuthService {
     /**
@@ -21,4 +23,17 @@ public interface AuthService {
      * @return A response DTO containing JWT tokens and user information.
      */
     JwtResponse loginUser(LoginRequest request);
+
+    /**
+     * Logs out the user by invalidating their refresh token.
+     */
+    void logoutUser();
+
+    /**
+     * Refreshes an expired access token using a valid refresh token.
+     *
+     * @param request DTO containing the refresh token.
+     * @return A response DTO containing a new access token and the original refresh token.
+     */
+    TokenRefreshResponse refreshToken(TokenRefreshRequest request);
 }

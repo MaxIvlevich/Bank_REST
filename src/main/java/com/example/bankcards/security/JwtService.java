@@ -1,5 +1,6 @@
 package com.example.bankcards.security;
 
+import com.example.bankcards.entity.User;
 import org.springframework.security.core.Authentication;
 
 /**
@@ -31,4 +32,13 @@ public interface JwtService {
      * @return true if the token is valid, false otherwise.
      */
     boolean isTokenValid(String token);
+
+    /**
+     * Generates a JWT access token for the given user.
+     *
+     * @param user the user for whom the access token is to be generated.
+     *             Must contain at least a unique identifier and username.
+     * @return a signed JWT access token as a String.
+     */
+    String generateAccessTokenForUser(User user);
 }

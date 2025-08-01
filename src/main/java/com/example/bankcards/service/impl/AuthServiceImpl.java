@@ -2,6 +2,8 @@ package com.example.bankcards.service.impl;
 
 import com.example.bankcards.dto.request.LoginRequest;
 import com.example.bankcards.dto.request.RegistrationRequest;
+import com.example.bankcards.dto.request.TokenRefreshRequest;
+import com.example.bankcards.dto.response.TokenRefreshResponse;
 import com.example.bankcards.dto.response.UserResponseDto;
 import com.example.bankcards.dto.response.JwtResponse;
 import com.example.bankcards.entity.User;
@@ -19,8 +21,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.security.core.GrantedAuthority;
+import com.example.bankcards.entity.RefreshToken;
 
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,8 +35,8 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
-
     private final UserMapper userMapper;
+
     @Override
     public UserResponseDto registerUser(RegistrationRequest request) {
         if (userRepository.existsByUsername(request.username())) {
@@ -46,7 +50,6 @@ public class AuthServiceImpl implements AuthService {
         user.setRoles(Set.of(Role.ROLE_USER));
         userRepository.save(user);
         return userMapper.toUserResponseDto(user);
-
     }
 
     @Override
@@ -62,7 +65,6 @@ public class AuthServiceImpl implements AuthService {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toSet());
 
-        // 6. Формирование ответа
         return new JwtResponse(
                 accessToken,
                 refreshToken,
@@ -70,5 +72,29 @@ public class AuthServiceImpl implements AuthService {
                 userPrincipal.getUsername(),
                 roles
         );
+    }
+
+    @Override
+    public void logoutUser() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof User userPrincipal) {
+            refreshTokenService.deleteByUserId(userPrincipal.getId());
+        }
+        SecurityContextHolder.clearContext();
+    }
+
+    @Override
+    public TokenRefreshResponse refreshToken(TokenRefreshRequest request) {
+        String requestRefreshToken = request.refreshToken();
+
+        return refreshTokenService.findByToken(requestRefreshToken)
+                .map(refreshTokenService::verifyExpiration)
+                .map(RefreshToken::getUser)
+                .map(user -> {
+                    String newAccessToken = jwtService.generateAccessTokenForUser(user);
+                    return new TokenRefreshResponse(newAccessToken, requestRefreshToken);
+                })
+                .orElseThrow(() -> new RuntimeException( // TODO: Заменить на кастомное исключение TokenRefreshException
+                        "Refresh token is not in database or is invalid!"));
     }
 }
