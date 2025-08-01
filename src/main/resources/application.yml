@@ -3,9 +3,9 @@ server:
 spring:
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/bank_api_db
-    username: postgres
-    password: postgres
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -20,10 +20,13 @@ spring:
     change-log: classpath:/db/changelog/db.changelog-master.yaml
     enabled: true
 app:
+  encryption:
+    key: ${ENCRYPTION_KEY}
   jwt:
     secret: ${APP_JWT_SECRET}
     expirationMs: ${ACCESS_TOKEN_TIME}
     refreshExpirationMs: ${REFRESH_TOKEN_TIME}
+
 springdoc:
   api-docs:
     path: /api-docs

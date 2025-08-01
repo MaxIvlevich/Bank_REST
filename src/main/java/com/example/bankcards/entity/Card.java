@@ -1,6 +1,7 @@
 package com.example.bankcards.entity;
 
 import com.example.bankcards.entity.enums.CardStatus;
+import com.example.bankcards.util.encryption.CardNumberEncryptor;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -37,7 +38,7 @@ public class Card {
      * The card number, encrypted in the database.
      * The CardNumberEncryptor class will handle encryption/decryption automatically.
      */
-    //@Convert(converter = CardNumberEncryptor.class) TODO CardNumberEncryptor
+    @Convert(converter = CardNumberEncryptor.class)
     @Column(name = "card_number", nullable = false, unique = true)
     private String cardNumber;
 
