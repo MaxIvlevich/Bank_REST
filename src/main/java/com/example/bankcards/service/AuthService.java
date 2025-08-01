@@ -2,6 +2,7 @@ package com.example.bankcards.service;
 
 import com.example.bankcards.dto.request.LoginRequest;
 import com.example.bankcards.dto.request.RegistrationRequest;
+import com.example.bankcards.dto.response.UserResponseDto;
 import com.example.bankcards.dto.response.JwtResponse;
 
 public interface AuthService {
@@ -11,7 +12,7 @@ public interface AuthService {
      * @param request DTO containing user registration data (username, password).
      * @return A response DTO containing JWT tokens and user information.
      */
-    JwtResponse registerUser(RegistrationRequest request);
+    UserResponseDto registerUser(RegistrationRequest request);
 
     /**
      * Authenticates an existing user and provides JWT tokens.

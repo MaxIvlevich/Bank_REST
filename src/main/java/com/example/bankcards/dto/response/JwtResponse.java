@@ -1,6 +1,7 @@
 package com.example.bankcards.dto.response;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public record JwtResponse (
@@ -8,7 +9,6 @@ public record JwtResponse (
         String refreshToken,
         UUID id,
         String username,
-        String email,
-        List<String> roles
+        Set<String> roles
 ){
 }
