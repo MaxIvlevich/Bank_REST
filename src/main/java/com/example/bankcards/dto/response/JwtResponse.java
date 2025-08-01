@@ -1,4 +1,4 @@
-package com.example.bankcards.dto.auth;
+package com.example.bankcards.dto.response;
 
 import java.util.List;
 import java.util.UUID;

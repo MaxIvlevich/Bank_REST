@@ -26,10 +26,10 @@ public interface  RefreshTokenRepository extends JpaRepository<RefreshToken, UUI
      * This is useful when a user logs out from all devices or when their account is disabled.
      * The @Modifying annotation is required for queries that change data.
      *
-     * @param user The user whose refresh tokens should be deleted.
+     * @param userId The ID of user whose refresh tokens should be deleted.
      * @return The number of tokens deleted.
      */
     @Modifying
-    int deleteByUser(User user);
+    int deleteByUserid(UUID userId);
 
 }

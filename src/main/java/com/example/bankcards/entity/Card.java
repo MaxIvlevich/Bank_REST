@@ -37,7 +37,7 @@ public class Card {
      * The card number, encrypted in the database.
      * The CardNumberEncryptor class will handle encryption/decryption automatically.
      */
-    @Convert(converter = CardNumberEncryptor.class)
+    //@Convert(converter = CardNumberEncryptor.class) TODO CardNumberEncryptor
     @Column(name = "card_number", nullable = false, unique = true)
     private String cardNumber;
 
