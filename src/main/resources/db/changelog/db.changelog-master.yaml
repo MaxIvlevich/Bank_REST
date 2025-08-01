@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: max.ivlev
+      changes:
+        - sqlFile:
+            path: changes/V001_create-users-table.sql
+            relativeToChangelogFile: true
+  - changeSet:
+      id: 2
+      author: max.ivlev
+      changes:
+        - sqlFile:
+            path: changes/V002_create-cards-table.sql
+            relativeToChangelogFile: true
+  - changeSet:
+      id: 3
+      author: max.ivlev
+      changes:
+        - sqlFile:
+            path: changes/V003_create-refresh-tokens-table.sql
+            relativeToChangelogFile: true
