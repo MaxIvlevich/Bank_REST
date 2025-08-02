@@ -4,7 +4,7 @@ CREATE TABLE cards (
                        expiration_date DATE NOT NULL,
                        status VARCHAR(20) NOT NULL,
                        balance NUMERIC(19, 2) NOT NULL DEFAULT 0.00,
-                       is_active BOOLEAN NOT NULL DEFAULT TRUE,
+                       active BOOLEAN NOT NULL DEFAULT TRUE,
                        user_id BIGINT NOT NULL,
                        CONSTRAINT fk_cards_on_user FOREIGN KEY (user_id) REFERENCES users (id)
 );

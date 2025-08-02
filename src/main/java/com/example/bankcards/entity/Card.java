@@ -17,7 +17,6 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.SQLRestriction;
 
 import java.math.BigDecimal;
 import java.time.YearMonth;
@@ -28,7 +27,6 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-@SQLRestriction("is_active = true")
 public class Card {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -66,7 +64,7 @@ public class Card {
      * and will not be fetched by standard repository queries due to @SQLRestriction.
      */
     @Column(name = "is_active", nullable = false)
-    private boolean isActive = true;
+    private boolean active = true;
 
     /**
      * The owner of the card. This creates a many-to-one relationship with the User entity.

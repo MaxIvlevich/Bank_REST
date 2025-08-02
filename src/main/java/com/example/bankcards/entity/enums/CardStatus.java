@@ -6,6 +6,9 @@ public enum CardStatus {
      */
     ACTIVE,
 
+    /** A user has requested to block the card, pending admin approval. */
+    BLOCK_REQUESTED,
+
     /**
      * The card is blocked and cannot be used.
      */
