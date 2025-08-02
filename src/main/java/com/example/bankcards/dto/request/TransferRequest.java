@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.UUID;
 
 public record TransferRequest(
@@ -17,4 +18,13 @@ public record TransferRequest(
         @Positive(message = "Transfer amount must be positive")
         BigDecimal amount
 ) {
+        /**
+         * Canonical constructor to normalize the amount.
+         * This ensures that any amount passed to this DTO is set to a financial standard scale.
+         */
+        public TransferRequest {
+                if (amount != null) {
+                        amount = amount.setScale(2, RoundingMode.HALF_UP);
+                }
+        }
 }

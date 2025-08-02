@@ -30,6 +30,6 @@ public interface  RefreshTokenRepository extends JpaRepository<RefreshToken, UUI
      * @return The number of tokens deleted.
      */
     @Modifying
-    int deleteByUserid(UUID userId);
+    int deleteByUserId(UUID userId);
 
 }
