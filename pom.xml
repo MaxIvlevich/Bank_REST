@@ -22,8 +22,7 @@
         <postgres.version>42.7.7</postgres.version>
         <org.mapstruct.version>1.6.3</org.mapstruct.version>
         <jsonwebtoken.version>0.12.6</jsonwebtoken.version>
-        <swager.core.version>2.2.35</swager.core.version>
-        <swager.openapi.version>1.8.0</swager.openapi.version>
+        <swager.openapi.version>2.8.9</swager.openapi.version>
     </properties>
 
     <dependencies>
@@ -116,13 +115,8 @@
         </dependency>
         <!--		swagger     -->
         <dependency>
-            <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-annotations</artifactId>
-            <version>${swager.core.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-ui</artifactId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>${swager.openapi.version}</version>
         </dependency>
     </dependencies>

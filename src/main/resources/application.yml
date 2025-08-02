@@ -36,3 +36,7 @@ initial:
    user:
      login: ${LOGIN_INIT_USER}
      pass: ${PASS_INIT_USER}
+logging:
+  level:
+    # Включаем DEBUG для всего Spring Security
+    org.springframework.security: DEBUG
