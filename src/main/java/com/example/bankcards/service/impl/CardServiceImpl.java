@@ -12,7 +12,7 @@ import com.example.bankcards.exception.UnauthorizedOperationException;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.service.CardService;
 import com.example.bankcards.service.query.CardQueryService;
-import com.example.bankcards.util.mapper.CardMapper;
+import com.example.bankcards.mapper.CardMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;

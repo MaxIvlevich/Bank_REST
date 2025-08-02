@@ -5,6 +5,6 @@ CREATE TABLE cards (
                        status VARCHAR(20) NOT NULL,
                        balance NUMERIC(19, 2) NOT NULL DEFAULT 0.00,
                        active BOOLEAN NOT NULL DEFAULT TRUE,
-                       user_id BIGINT NOT NULL,
+                       user_id UUID NOT NULL,
                        CONSTRAINT fk_cards_on_user FOREIGN KEY (user_id) REFERENCES users (id)
 );

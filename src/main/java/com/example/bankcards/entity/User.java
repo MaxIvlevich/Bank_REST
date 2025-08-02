@@ -12,6 +12,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -35,6 +36,7 @@ import java.util.stream.Collectors;
 @Builder
 @NoArgsConstructor
 @SQLRestriction("is_active = true")
+@Table(name = "users")
 public class User  implements UserDetails {
 
     @Id

@@ -15,7 +15,7 @@ import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.security.JwtService;
 import com.example.bankcards.service.AuthService;
 import com.example.bankcards.service.RefreshTokenService;
-import com.example.bankcards.util.mapper.UserMapper;
+import com.example.bankcards.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;

@@ -6,6 +6,7 @@ import com.example.bankcards.exception.TokenRefreshException;
 import com.example.bankcards.repository.RefreshTokenRepository;
 import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.service.RefreshTokenService;
+import com.example.bankcards.service.query.UserQueryService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +23,7 @@ import java.util.UUID;
 public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     private final RefreshTokenRepository refreshTokenRepository;
-    private final UserRepository userRepository;
+    private final UserQueryService userQueryService;
 
     @Value("${app.jwt.refreshExpirationMs}")
     private Long refreshTokenDurationMs;
@@ -39,9 +40,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         log.info("CREATE_REFRESH_TOKEN: [userId={}].", userId);
         RefreshToken refreshToken = new RefreshToken();
 
-        refreshToken.setUser(userRepository.findById(userId).orElseThrow(
-                () -> new ResourceNotFoundException("Error: User not found with id " + userId)
-        ));
+        refreshToken.setUser(userQueryService.findByIdOrThrow(userId));
         refreshToken.setExpiryDate(Instant.now().plusMillis(refreshTokenDurationMs));
         refreshToken.setToken(UUID.randomUUID().toString());
         RefreshToken savedToken = refreshTokenRepository.save(refreshToken);

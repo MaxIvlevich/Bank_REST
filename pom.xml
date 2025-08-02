@@ -18,7 +18,7 @@
 
     <!-- Свойства проекта, включая версию Java -->
     <properties>
-        <java.version>21</java.version>
+        <java.version>17</java.version>
         <postgres.version>42.7.7</postgres.version>
         <org.mapstruct.version>1.6.3</org.mapstruct.version>
         <jsonwebtoken.version>0.12.6</jsonwebtoken.version>

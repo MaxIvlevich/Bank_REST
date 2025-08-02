@@ -2,6 +2,7 @@ package com.example.bankcards.entity;
 
 import com.example.bankcards.entity.enums.CardStatus;
 import com.example.bankcards.util.encryption.CardNumberEncryptor;
+import com.example.bankcards.mapper.YearMonthDateConverter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -44,6 +45,7 @@ public class Card {
      * The expiration date of the card (year and month).
      */
     @Column(name = "expiration_date", nullable = false)
+    @Convert(converter = YearMonthDateConverter.class)
     private YearMonth expirationDate;
 
     /**
@@ -63,7 +65,7 @@ public class Card {
      * Flag for soft delete. If false, the card is considered deleted
      * and will not be fetched by standard repository queries due to @SQLRestriction.
      */
-    @Column(name = "is_active", nullable = false)
+    @Column(name = "active", nullable = false)
     private boolean active = true;
 
     /**
