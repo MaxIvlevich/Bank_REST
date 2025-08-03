@@ -16,20 +16,22 @@ import java.util.UUID;
 @Slf4j
 @Component
 @RequiredArgsConstructor
- class CardStatusManager {
+class CardStatusManager {
     private final CardRepository cardRepository;
     private final CardQueryService cardQueryService;
 
-     Card processStatusChange(UUID cardId, CardStatus newStatus, String actionName, CardStatus... expectedStatuses) {
-         log.info("PROCESS_STATUS_CHANGE: [cardId={}, newStatus={}, action={}].", cardId, newStatus, actionName);
+    Card processStatusChange(UUID cardId, CardStatus newStatus, String actionName, CardStatus... expectedStatuses) {
+        log.info("PROCESS_STATUS_CHANGE: [cardId={}, newStatus={}, action={}].", cardId, newStatus, actionName);
 
         Card card = cardQueryService.findByIdOrThrow(cardId);
-        validateCurrentStatus(card, actionName, expectedStatuses);
+
 
         if (card.getStatus() == newStatus) {
             log.warn("PROCESS_STATUS_CHANGE_WARN: [cardId={}]. Card is already in target state {}.", cardId, newStatus);
             return card;
         }
+
+        validateCurrentStatus(card, actionName, expectedStatuses);
 
         if (newStatus == CardStatus.ACTIVE) {
             ensureCardIsNotExpired(card);
@@ -37,7 +39,7 @@ import java.util.UUID;
 
         card.setStatus(newStatus);
         Card savedCard = cardRepository.save(card);
-         log.info("PROCESS_STATUS_CHANGE_SUCCESS: [cardId={}]. New status: {}.", cardId, newStatus);
+        log.info("PROCESS_STATUS_CHANGE_SUCCESS: [cardId={}]. New status: {}.", cardId, newStatus);
 
         return savedCard;
     }
