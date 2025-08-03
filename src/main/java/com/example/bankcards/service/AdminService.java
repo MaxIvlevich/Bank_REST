@@ -1,8 +1,10 @@
 package com.example.bankcards.service;
 
 import com.example.bankcards.dto.request.CreateCardRequest;
+import com.example.bankcards.dto.request.UpdateProfileRequest;
 import com.example.bankcards.dto.request.UpdateUserRolesRequest;
 import com.example.bankcards.dto.response.CardResponse;
+import com.example.bankcards.dto.response.UserDetailResponse;
 import com.example.bankcards.dto.response.UserResponseDto;
 import com.example.bankcards.entity.enums.CardStatus;
 import org.springframework.data.domain.Page;
@@ -120,4 +122,26 @@ public interface AdminService {
      * @return An updated DTO of the user.
      */
     UserResponseDto unlockUserAccount(UUID userId);
+
+    /**
+     * Finds a single user by their ID, including their profile and card list.
+     * @param userId The ID of the user.
+     * @return A detailed DTO of the found user.
+     */
+    UserDetailResponse findUserWithDetailsById(UUID userId);
+
+    /**
+     * Finds all users with their associated cards, using pagination.
+     * @param pageable Pagination information.
+     * @return A page of detailed user DTOs.
+     */
+    Page<UserDetailResponse> findAllUsersWithCards(Pageable pageable);
+
+    /**
+     * Updates the profile information for a specific user.
+     * @param userId The ID of the user whose profile to update.
+     * @param request DTO containing the new profile data.
+     * @return The updated UserDetailResponse with the new profile info.
+     */
+    UserDetailResponse updateUserProfile(UUID userId, UpdateProfileRequest request);
 }

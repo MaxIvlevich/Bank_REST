@@ -36,6 +36,9 @@ initial:
    user:
      login: ${LOGIN_INIT_USER}
      pass: ${PASS_INIT_USER}
+     email: ${EMAIL_INIT_USER}
+     lastname: ${LASTNAME_INIT_USER}
+     firstname: ${FIRSTNAME_INIT_USER}
 logging:
   level:
     # Включаем DEBUG для всего Spring Security

@@ -3,6 +3,7 @@ package com.example.bankcards.controller.impl;
 import com.example.bankcards.controller.CardController;
 import com.example.bankcards.dto.request.TransferRequest;
 import com.example.bankcards.dto.response.CardResponse;
+import com.example.bankcards.dto.response.PagedResponse;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.service.CardService;
 import lombok.RequiredArgsConstructor;
@@ -21,9 +22,9 @@ public class CardControllerImpl implements CardController{
     private final CardService cardService;
 
     @Override
-    public ResponseEntity<Page<CardResponse>> getMyCards(@AuthenticationPrincipal User user, Pageable pageable) {
+    public ResponseEntity<PagedResponse<CardResponse>> getMyCards(@AuthenticationPrincipal User user, Pageable pageable) {
         Page<CardResponse> cards = cardService.findMyCards(user.getId(), pageable);
-        return ResponseEntity.ok(cards);
+        return ResponseEntity.ok(PagedResponse.from(cards));
     }
 
     @Override

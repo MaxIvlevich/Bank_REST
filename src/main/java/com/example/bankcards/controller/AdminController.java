@@ -1,8 +1,11 @@
 package com.example.bankcards.controller;
 
 import com.example.bankcards.dto.request.CreateCardRequest;
+import com.example.bankcards.dto.request.UpdateProfileRequest;
 import com.example.bankcards.dto.request.UpdateUserRolesRequest;
 import com.example.bankcards.dto.response.CardResponse;
+import com.example.bankcards.dto.response.PagedResponse;
+import com.example.bankcards.dto.response.UserDetailResponse;
 import com.example.bankcards.dto.response.UserResponseDto;
 import com.example.bankcards.entity.enums.CardStatus;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,15 +37,15 @@ public interface AdminController {
 
     @Operation(summary = "Find all cards in the system", description = "Returns a paginated list of all cards, including inactive.")
     @GetMapping("/cards")
-    ResponseEntity<Page<CardResponse>> getAllCards(Pageable pageable);
+    ResponseEntity<PagedResponse<CardResponse>> getAllCards(Pageable pageable);
 
     @Operation(summary = "Find all cards for a specific user", description = "Returns a paginated list of all cards for a given user.")
     @GetMapping("/users/{userId}/cards")
-    ResponseEntity<Page<CardResponse>> getAllCardsForUser(@Parameter(description = "ID of the user") @PathVariable UUID userId, Pageable pageable);
+    ResponseEntity<PagedResponse<CardResponse>> getAllCardsForUser(@Parameter(description = "ID of the user") @PathVariable UUID userId, Pageable pageable);
 
     @Operation(summary = "Find cards by status", description = "Returns a paginated list of all cards filtered by status.")
     @GetMapping("/cards/status/{status}")
-    ResponseEntity<Page<CardResponse>> getCardsByStatus(@Parameter(description = "Card status") @PathVariable CardStatus status, Pageable pageable);
+    ResponseEntity<PagedResponse<CardResponse>> getCardsByStatus(@Parameter(description = "Card status") @PathVariable CardStatus status, Pageable pageable);
 
     @Operation(summary = "Create a new card for a user")
     @PostMapping("/cards")
@@ -68,7 +71,7 @@ public interface AdminController {
     // --- User Management ---
     @Operation(summary = "Find all users")
     @GetMapping("/users")
-    ResponseEntity<Page<UserResponseDto>> getAllUsers(Pageable pageable);
+    ResponseEntity<PagedResponse<UserResponseDto>> getAllUsers(Pageable pageable);
 
     @Operation(summary = "Find user by ID")
     @GetMapping("/users/{userId}")
@@ -85,4 +88,18 @@ public interface AdminController {
     @Operation(summary = "Unlock a user account")
     @PostMapping("/users/{userId}/unlock")
     ResponseEntity<UserResponseDto> unlockUserAccount(@PathVariable UUID userId);
+
+    @Operation(summary = "Find user by ID with full details",
+            description = "Returns detailed information about a user, including their profile and list of cards.")
+    @GetMapping("/users/{userId}/details")
+    ResponseEntity<UserDetailResponse> getUserDetailsById(@PathVariable UUID userId);
+
+    @Operation(summary = "Find all users with their cards",
+            description = "Returns a paginated list of all users, including their card lists.")
+    @GetMapping("/users/with-cards")
+    ResponseEntity<PagedResponse<UserDetailResponse>> getAllUsersWithCards(Pageable pageable);
+
+    @Operation(summary = "Update user profile")
+    @PutMapping("/users/{userId}/profile")
+    ResponseEntity<UserDetailResponse> updateUserProfile(@PathVariable UUID userId, @Valid @RequestBody UpdateProfileRequest request);
 }

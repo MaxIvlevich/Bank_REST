@@ -1,5 +1,6 @@
 package com.example.bankcards.config;
 
+import com.example.bankcards.security.impl.CustomAccessDeniedHandler;
 import com.example.bankcards.security.impl.JwtAuthEntryPoint;
 import com.example.bankcards.security.impl.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
@@ -25,12 +26,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
     private final JwtAuthFilter jwtAuthFilter;
     private final JwtAuthEntryPoint unauthorizedHandler;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
+                .exceptionHandling(exception ->  exception
+                        .authenticationEntryPoint(unauthorizedHandler)
+                        .accessDeniedHandler(accessDeniedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(

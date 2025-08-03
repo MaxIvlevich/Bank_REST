@@ -2,13 +2,15 @@ package com.example.bankcards.controller.impl;
 
 import com.example.bankcards.controller.AdminController;
 import com.example.bankcards.dto.request.CreateCardRequest;
+import com.example.bankcards.dto.request.UpdateProfileRequest;
 import com.example.bankcards.dto.request.UpdateUserRolesRequest;
 import com.example.bankcards.dto.response.CardResponse;
+import com.example.bankcards.dto.response.PagedResponse;
+import com.example.bankcards.dto.response.UserDetailResponse;
 import com.example.bankcards.dto.response.UserResponseDto;
 import com.example.bankcards.entity.enums.CardStatus;
 import com.example.bankcards.service.AdminService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,18 +24,18 @@ public class AdminControllerImpl implements AdminController {
 
     private final AdminService adminService;
     @Override
-    public ResponseEntity<Page<CardResponse>> getAllCards(Pageable pageable) {
-        return ResponseEntity.ok(adminService.findAllCards(pageable));
+    public ResponseEntity<PagedResponse<CardResponse>> getAllCards(Pageable pageable) {
+        return ResponseEntity.ok(PagedResponse.from(adminService.findAllCards(pageable)));
     }
 
     @Override
-    public ResponseEntity<Page<CardResponse>> getAllCardsForUser(UUID userId, Pageable pageable) {
-        return ResponseEntity.ok(adminService.findAllCardsByUserId(userId, pageable));
+    public ResponseEntity<PagedResponse<CardResponse>> getAllCardsForUser(UUID userId, Pageable pageable) {
+        return ResponseEntity.ok(PagedResponse.from(adminService.findAllCardsByUserId(userId, pageable)));
     }
 
     @Override
-    public ResponseEntity<Page<CardResponse>> getCardsByStatus(CardStatus status, Pageable pageable) {
-        return ResponseEntity.ok(adminService.findCardsByStatus(status, pageable));
+    public ResponseEntity<PagedResponse<CardResponse>> getCardsByStatus(CardStatus status, Pageable pageable) {
+        return ResponseEntity.ok(PagedResponse.from(adminService.findCardsByStatus(status, pageable)));
     }
 
     @Override
@@ -63,8 +65,8 @@ public class AdminControllerImpl implements AdminController {
     }
 
     @Override
-    public ResponseEntity<Page<UserResponseDto>> getAllUsers(Pageable pageable) {
-        return ResponseEntity.ok(adminService.findAllUsers(pageable));
+    public ResponseEntity<PagedResponse<UserResponseDto>> getAllUsers(Pageable pageable) {
+        return ResponseEntity.ok(PagedResponse.from(adminService.findAllUsers(pageable)));
     }
 
     @Override
@@ -86,4 +88,22 @@ public class AdminControllerImpl implements AdminController {
     public ResponseEntity<UserResponseDto> unlockUserAccount(UUID userId) {
         return ResponseEntity.ok(adminService.unlockUserAccount(userId));
     }
+
+    @Override
+    public ResponseEntity<UserDetailResponse> getUserDetailsById(UUID userId) {
+        UserDetailResponse userDetails = adminService.findUserWithDetailsById(userId);
+        return ResponseEntity.ok(userDetails);
+    }
+
+    @Override
+    public ResponseEntity<PagedResponse<UserDetailResponse>> getAllUsersWithCards(Pageable pageable) {
+        return ResponseEntity.ok(PagedResponse.from(adminService.findAllUsersWithCards(pageable)));
+    }
+
+    @Override
+    public ResponseEntity<UserDetailResponse> updateUserProfile(UUID userId, UpdateProfileRequest request) {
+        return ResponseEntity.ok(adminService.updateUserProfile(userId, request));
+
+    }
+
 }

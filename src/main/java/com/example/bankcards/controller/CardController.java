@@ -2,6 +2,7 @@ package com.example.bankcards.controller;
 
 import com.example.bankcards.dto.request.TransferRequest;
 import com.example.bankcards.dto.response.CardResponse;
+import com.example.bankcards.dto.response.PagedResponse;
 import com.example.bankcards.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -27,7 +28,7 @@ import java.util.UUID;
 public interface CardController {
     @Operation(summary = "Get my cards", description = "Returns a paginated list of my active cards.")
     @GetMapping("/my")
-    ResponseEntity<Page<CardResponse>> getMyCards(@AuthenticationPrincipal User user, Pageable pageable);
+    ResponseEntity<PagedResponse<CardResponse>> getMyCards(@AuthenticationPrincipal User user, Pageable pageable);
 
     @Operation(summary = "Get my card by ID", description = "Returns details of a specific card if it belongs to me.")
     @GetMapping("/my/{cardId}")

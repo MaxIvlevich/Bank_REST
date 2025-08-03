@@ -4,6 +4,7 @@ import com.example.bankcards.entity.RefreshToken;
 import com.example.bankcards.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -22,14 +23,13 @@ public interface  RefreshTokenRepository extends JpaRepository<RefreshToken, UUI
     Optional<RefreshToken> findByToken(String token);
 
     /**
-     * Deletes all refresh tokens associated with a specific user.
-     * This is useful when a user logs out from all devices or when their account is disabled.
-     * The @Modifying annotation is required for queries that change data.
+     * Deletes a refresh token by the user's ID using a custom JPQL query.
+     * This is more efficient than a derived delete query.
      *
-     * @param userId The ID of user whose refresh tokens should be deleted.
-     * @return The number of tokens deleted.
+     * @param userId The ID of the user whose token should be deleted.
      */
-    @Modifying
+    @Modifying // Обязательно для изменяющих запросов
+    @Query("DELETE FROM RefreshToken rt WHERE rt.user.id = :userId")
     int deleteByUserId(UUID userId);
 
 }

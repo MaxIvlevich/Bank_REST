@@ -1,6 +1,7 @@
 package com.example.bankcards.config;
 
 import com.example.bankcards.entity.User;
+import com.example.bankcards.entity.UserProfile;
 import com.example.bankcards.entity.enums.Role;
 import com.example.bankcards.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,12 @@ public class DataInitializer implements CommandLineRunner {
 
     @Value("${initial.user.pass}")
     private String adminPassword;
+    @Value("${initial.user.email}")
+    private String adminEmail;
+    @Value("${initial.user.lastname}")
+    private String initLastname;
+    @Value("${initial.user.firstname}")
+    private String initFirstName;
 
     /**
      * This method is executed upon application startup.
@@ -42,13 +49,19 @@ public class DataInitializer implements CommandLineRunner {
             User admin = new User();
             admin.setUsername(adminUsername);
             admin.setPassword(passwordEncoder.encode(adminPassword));
-
             admin.setRoles(Set.of(Role.ROLE_ADMIN, Role.ROLE_USER));
-
             admin.setEnabled(true);
             admin.setAccountNonExpired(true);
             admin.setAccountNonLocked(true);
             admin.setCredentialsNonExpired(true);
+
+            UserProfile adminProfile = new UserProfile();
+            adminProfile.setFirstName(initLastname);
+            adminProfile.setLastName(initFirstName);
+            adminProfile.setEmail(adminEmail);
+
+            adminProfile.setUser(admin);
+            admin.setUserProfile(adminProfile);
 
             userRepository.save(admin);
             log.info("INITIALIZATION: Admin user '{}' created successfully.", adminUsername);

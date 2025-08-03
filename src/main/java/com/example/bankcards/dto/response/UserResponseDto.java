@@ -8,6 +8,7 @@ import java.util.UUID;
 public record UserResponseDto(
         UUID id,
         String username,
-        Set<Role> roles
+        Set<Role> roles,
+         boolean isActive
 ){
 }

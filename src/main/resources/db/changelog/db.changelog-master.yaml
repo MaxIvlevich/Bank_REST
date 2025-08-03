@@ -20,3 +20,10 @@ databaseChangeLog:
         - sqlFile:
             path: changes/V003_create-refresh-tokens-table.sql
             relativeToChangelogFile: true
+  - changeSet:
+      id: 4
+      author: max.ivlev
+      changes:
+        - sqlFile:
+            path: changes/V004_create-user-profiles-schema.sql
+            relativeToChangelogFile: true
