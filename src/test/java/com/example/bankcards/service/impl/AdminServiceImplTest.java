@@ -21,7 +21,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -119,9 +118,7 @@ public class AdminServiceImplTest {
 
         // Act & Assert
         // Проверяем, что вызов метода приводит к выбросу именно нашего исключения
-        assertThrows(ResourceNotFoundException.class, () -> {
-            adminService.findUserById(userId);
-        });
+        assertThrows(ResourceNotFoundException.class, () -> adminService.findUserById(userId));
 
         // Проверяем, что метод был вызван
         verify(userQueryService, times(1)).findByIdOrThrow(userId);
@@ -134,7 +131,7 @@ public class AdminServiceImplTest {
     void createCard_shouldCreateAndReturnCard_whenDataIsValid() {
         // Arrange
         UUID ownerId = UUID.randomUUID();
-        CreateCardRequest request = new CreateCardRequest(ownerId, "1111222233334444", YearMonth.now().plusYears(1));
+        CreateCardRequest request = new CreateCardRequest(ownerId, "1111222233334444", YearMonth.now().plusYears(1),null);
 
         User owner = new User();
         owner.setId(ownerId);
@@ -157,13 +154,11 @@ public class AdminServiceImplTest {
     @DisplayName("createCard should throw DuplicateResourceException when card number exists")
     void createCard_shouldThrowException_whenCardNumberExists() {
         // Arrange
-        CreateCardRequest request = new CreateCardRequest(UUID.randomUUID(), "1111222233334444", YearMonth.now().plusYears(1));
+        CreateCardRequest request = new CreateCardRequest(UUID.randomUUID(), "1111222233334444", YearMonth.now().plusYears(1),null);
         when(cardRepository.existsByCardNumberAndActiveTrue(request.cardNumber())).thenReturn(true);
 
 
-        assertThrows(DuplicateResourceException.class, () -> {
-            adminService.createCard(request);
-        });
+        assertThrows(DuplicateResourceException.class, () -> adminService.createCard(request));
 
         verify(userQueryService, never()).findByIdOrThrow(any());
         verify(cardRepository, never()).save(any());

@@ -1,4 +1,4 @@
-package com.example.bankcards.service;
+package com.example.bankcards.service.impl;
 
 import com.example.bankcards.dto.request.TransferRequest;
 import com.example.bankcards.entity.Card;
@@ -8,11 +8,8 @@ import com.example.bankcards.exception.InsufficientFundsException;
 import com.example.bankcards.exception.InvalidOperationException;
 import com.example.bankcards.exception.UnauthorizedOperationException;
 import com.example.bankcards.repository.CardRepository;
-import com.example.bankcards.service.impl.CardServiceImpl;
 import com.example.bankcards.service.query.CardQueryService;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,18 +18,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.time.YearMonth;
-import java.util.Set;
 import java.util.UUID;
 
-import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -105,9 +96,7 @@ public class CardServiceImplTest {
         when(cardQueryService.findActiveByIdWithLockOrThrow(toCard.getId())).thenReturn(toCard);
 
         // Act & Assert
-        assertThrows(InsufficientFundsException.class, () -> {
-            cardService.transferBetweenMyCards(request, userId);
-        });
+        assertThrows(InsufficientFundsException.class, () -> cardService.transferBetweenMyCards(request, userId));
 
         verify(cardRepository, never()).save(any(Card.class));
     }
@@ -123,9 +112,7 @@ public class CardServiceImplTest {
         when(cardQueryService.findActiveByIdWithLockOrThrow(toCard.getId())).thenReturn(toCard);
 
         // Act & Assert
-        assertThrows(InvalidOperationException.class, () -> {
-            cardService.transferBetweenMyCards(request, userId);
-        });
+        assertThrows(InvalidOperationException.class, () -> cardService.transferBetweenMyCards(request, userId));
     }
 
     @Test
@@ -142,9 +129,7 @@ public class CardServiceImplTest {
         when(cardQueryService.findActiveByIdWithLockOrThrow(toCard.getId())).thenReturn(toCard);
 
         // Act & Assert
-        assertThrows(UnauthorizedOperationException.class, () -> {
-            cardService.transferBetweenMyCards(request, userId);
-        });
+        assertThrows(UnauthorizedOperationException.class, () -> cardService.transferBetweenMyCards(request, userId));
     }
 
 }

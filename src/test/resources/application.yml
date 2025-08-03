@@ -1,0 +1,10 @@
+
+app:
+  encryption:
+    key: 1234567890123456
+  jwt:
+    secret: c2VjcmV0LWtleS1mb3ItamF2YS1hcHAtZm9yLXRlc3RpbmctcHJvamVjdA==
+    expirationMs: 3600000
+    refreshExpirationMs: 86400000
+
+

@@ -1,10 +1,13 @@
 package com.example.bankcards.dto.request;
 
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
+
+import java.math.BigDecimal;
 import java.time.YearMonth;
 import java.util.UUID;
 
@@ -21,7 +24,10 @@ public record CreateCardRequest (
 
         @NotNull(message = "Expiration date cannot be null")
         @Future(message = "Expiration date must be in the future")
-        YearMonth expirationDate
+        YearMonth expirationDate,
+
+        @DecimalMin(value = "0.0",  message = "Initial balance cannot be negative")
+        BigDecimal initialBalance
 
 ){
 }

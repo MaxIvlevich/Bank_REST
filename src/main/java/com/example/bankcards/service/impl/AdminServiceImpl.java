@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -60,13 +61,14 @@ public class AdminServiceImpl implements AdminService {
         }
 
         User owner = userQueryService.findByIdOrThrow(request.ownerId());
+        BigDecimal balance = request.initialBalance() != null ? request.initialBalance() : BigDecimal.ZERO;
 
         Card newCard = new Card();
         newCard.setCardNumber(request.cardNumber());
         newCard.setExpirationDate(request.expirationDate());
         newCard.setOwner(owner);
         newCard.setStatus(CardStatus.ACTIVE);
-        newCard.setBalance(BigDecimal.ZERO);
+        newCard.setBalance(balance.setScale(2, RoundingMode.HALF_UP));
         newCard.setActive(true);
 
         return cardMapper.toCardResponse(cardRepository.save(newCard));

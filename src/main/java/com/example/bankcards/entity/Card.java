@@ -53,7 +53,7 @@ public class Card {
      */
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private CardStatus status;
+    private CardStatus status ;
 
     /**
      * The current balance of the card. BigDecimal is used for precision.

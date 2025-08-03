@@ -16,6 +16,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @AutoConfigureMockMvc
 @Testcontainers
 public class AbstractIntegrationTest {
+
     /**
      * Defines the PostgreSQL container.
      * The image 'postgres:16-alpine' is lightweight.

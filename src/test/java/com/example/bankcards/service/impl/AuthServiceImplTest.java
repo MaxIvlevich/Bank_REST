@@ -1,4 +1,4 @@
-package com.example.bankcards.service;
+package com.example.bankcards.service.impl;
 
 import com.example.bankcards.dto.request.LoginRequest;
 import com.example.bankcards.dto.request.RegistrationRequest;
@@ -10,7 +10,7 @@ import com.example.bankcards.exception.DuplicateResourceException;
 import com.example.bankcards.mapper.UserMapper;
 import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.security.JwtService;
-import com.example.bankcards.service.impl.AuthServiceImpl;
+import com.example.bankcards.service.RefreshTokenService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -110,9 +110,7 @@ public class AuthServiceImplTest {
         // --- Act & Assert ---
 
         // Проверяем, что вызов метода приводит к выбросу  кастомного исключения
-        assertThrows(DuplicateResourceException.class, () -> {
-            authService.registerUser(request);
-        });
+        assertThrows(DuplicateResourceException.class, () -> authService.registerUser(request));
 
         verify(passwordEncoder, never()).encode(anyString());
         verify(userRepository, never()).save(any(User.class));

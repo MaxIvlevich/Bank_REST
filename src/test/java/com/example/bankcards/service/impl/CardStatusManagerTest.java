@@ -1,13 +1,9 @@
 package com.example.bankcards.service.impl;
 
-import com.example.bankcards.dto.response.CardResponse;
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.enums.CardStatus;
 import com.example.bankcards.exception.InvalidOperationException;
-import com.example.bankcards.mapper.CardMapper;
 import com.example.bankcards.repository.CardRepository;
-import com.example.bankcards.service.AdminService;
-import com.example.bankcards.service.impl.CardStatusManager;
 import com.example.bankcards.service.query.CardQueryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -21,11 +17,9 @@ import java.time.YearMonth;
 import java.util.UUID;
 
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -77,9 +71,7 @@ public class CardStatusManagerTest {
 
         // Act & Assert
         // А мы пытаемся подтвердить блокировку, которая требует статуса BLOCK_REQUESTED
-        assertThrows(InvalidOperationException.class, () -> {
-            cardStatusManager.processStatusChange(cardId, CardStatus.BLOCKED, "confirm block", CardStatus.BLOCK_REQUESTED);
-        });
+        assertThrows(InvalidOperationException.class, () -> cardStatusManager.processStatusChange(cardId, CardStatus.BLOCKED, "confirm block", CardStatus.BLOCK_REQUESTED));
 
         // Проверяем, что сохранение не вызывалось
         verify(cardRepository, never()).save(any(Card.class));
@@ -94,9 +86,7 @@ public class CardStatusManagerTest {
         when(cardQueryService.findByIdOrThrow(cardId)).thenReturn(testCard);
 
         // Act & Assert
-        assertThrows(InvalidOperationException.class, () -> {
-            cardStatusManager.processStatusChange(cardId, CardStatus.ACTIVE, "activate", CardStatus.BLOCKED);
-        });
+        assertThrows(InvalidOperationException.class, () -> cardStatusManager.processStatusChange(cardId, CardStatus.ACTIVE, "activate", CardStatus.BLOCKED));
 
         // Проверяем, что было вызвано сохранение для установки статуса EXPIRED
         assertEquals(CardStatus.EXPIRED, testCard.getStatus());
