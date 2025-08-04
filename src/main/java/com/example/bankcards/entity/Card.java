@@ -41,6 +41,9 @@ public class Card {
     @Column(name = "card_number", nullable = false, unique = true)
     private String cardNumber;
 
+    @Column(name = "card_number_hash", nullable = false, unique = true)
+    private String cardNumberHash;
+
     /**
      * The expiration date of the card (year and month).
      */

@@ -46,4 +46,7 @@ public interface CardRepository  extends JpaRepository<Card, UUID> {
      * @return A list of cards.
      */
     List<Card> findAllByOwnerIdIn(List<UUID> ownerIds);
+
+
+    boolean existsByCardNumberHash(String cardNumberHash);
 }

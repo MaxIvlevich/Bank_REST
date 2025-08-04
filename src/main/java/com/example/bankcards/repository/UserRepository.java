@@ -1,6 +1,8 @@
 package com.example.bankcards.repository;
 
 import com.example.bankcards.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -45,4 +47,22 @@ public interface  UserRepository extends JpaRepository<User, UUID> {
             "LEFT JOIN FETCH u.userProfile " +
             "WHERE u.id = :id")
     Optional<User> findByIdWithDetails(@Param("id") UUID id);
+
+    /**
+     * Finds any user by their ID, ignoring the 'is_active' flag.
+     * Intended for admin use.
+     * @param id The ID of the user.
+     * @return An Optional containing the user, regardless of their active status.
+     */
+    @Query("select u from User u where u.id = :id")
+    Optional<User> findById_Admin(@Param("id") UUID id);
+
+    /**
+     * Finds all users, ignoring the 'is_active' flag.
+     * Intended for admin use.
+     * @param pageable Pagination information.
+     * @return A page of all users.
+     */
+    @Query("select u from User u")
+    Page<User> findAll_Admin(Pageable pageable);
 }

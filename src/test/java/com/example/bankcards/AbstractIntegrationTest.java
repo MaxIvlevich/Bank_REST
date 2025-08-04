@@ -1,9 +1,13 @@
 package com.example.bankcards;
 
+import com.example.bankcards.config.DataInitializer;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+
+
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -17,6 +21,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 public class AbstractIntegrationTest {
 
+    @MockitoBean
+    private DataInitializer dataInitializer;
     /**
      * Defines the PostgreSQL container.
      * The image 'postgres:16-alpine' is lightweight.

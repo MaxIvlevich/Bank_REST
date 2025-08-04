@@ -40,7 +40,6 @@ import java.util.stream.Collectors;
 @Setter
 @Builder
 @NoArgsConstructor
-@SQLRestriction("is_active = true")
 @Table(name = "users")
 public class User  implements UserDetails {
 

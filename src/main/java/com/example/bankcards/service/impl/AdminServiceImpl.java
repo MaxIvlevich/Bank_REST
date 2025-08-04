@@ -20,9 +20,11 @@ import com.example.bankcards.service.query.CardQueryService;
 import com.example.bankcards.service.query.UserQueryService;
 import com.example.bankcards.mapper.CardMapper;
 import com.example.bankcards.mapper.UserMapper;
+import com.example.bankcards.util.encryption.HashUtil;
 import com.example.bankcards.util.masking.CardMaskingUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -56,22 +58,31 @@ public class AdminServiceImpl implements AdminService {
     public CardResponse createCard(CreateCardRequest request) {
         log.info("ADMIN_CREATE_CARD: [ownerId={}, cardNumber=...{}].",
                 request.ownerId(), CardMaskingUtil.maskCardNumber(request.cardNumber()));
-        if (cardRepository.existsByCardNumberAndActiveTrue(request.cardNumber())) {
-            throw new DuplicateResourceException("Active Card", "cardNumber", request.cardNumber());
+        // 1. Хешируем входящий номер карты
+        String cardNumberHash = HashUtil.sha256(request.cardNumber());
+
+        if (cardRepository.existsByCardNumberHash(cardNumberHash)) {
+            throw new DuplicateResourceException("Card", "cardNumber", request.cardNumber());
         }
 
         User owner = userQueryService.findByIdOrThrow(request.ownerId());
         BigDecimal balance = request.initialBalance() != null ? request.initialBalance() : BigDecimal.ZERO;
-
-        Card newCard = new Card();
-        newCard.setCardNumber(request.cardNumber());
-        newCard.setExpirationDate(request.expirationDate());
-        newCard.setOwner(owner);
-        newCard.setStatus(CardStatus.ACTIVE);
-        newCard.setBalance(balance.setScale(2, RoundingMode.HALF_UP));
-        newCard.setActive(true);
-
-        return cardMapper.toCardResponse(cardRepository.save(newCard));
+        try {
+            Card newCard = new Card();
+            newCard.setCardNumber(request.cardNumber());
+            newCard.setCardNumberHash(cardNumberHash);
+            newCard.setExpirationDate(request.expirationDate());
+            newCard.setOwner(owner);
+            newCard.setStatus(CardStatus.ACTIVE);
+            newCard.setBalance(balance.setScale(2, RoundingMode.HALF_UP));
+            newCard.setActive(true);
+            Card savedCard = cardRepository.save(newCard);
+            return cardMapper.toCardResponse(savedCard);
+        }catch (DataIntegrityViolationException e) {
+            log.warn("ADMIN_CREATE_CARD_FAIL: [cardNumber=...{}]. Reason: Card number already exists.",
+                    CardMaskingUtil.maskCardNumber(request.cardNumber()));
+            throw new DuplicateResourceException("Card", "cardNumber", request.cardNumber());
+        }
     }
 
     @Override
@@ -145,7 +156,7 @@ public class AdminServiceImpl implements AdminService {
     public Page<UserResponseDto> findAllUsers(Pageable pageable) {
         log.info("ADMIN_FIND_ALL_USERS: [pageNumber={}, pageSize={}].",
                 pageable.getPageNumber(), pageable.getPageSize());
-        return userRepository.findAll(pageable).map(userMapper::toUserResponseDto);
+        return userRepository.findAll_Admin(pageable).map(userMapper::toUserResponseDto);
     }
 
     @Override
@@ -184,7 +195,20 @@ public class AdminServiceImpl implements AdminService {
         User user = userRepository.findByIdWithDetails(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
 
-        return userMapper.toUserDetailResponse(user);
+        UserDetailResponse response = userMapper.toUserDetailResponse(user);
+
+        List<CardResponse> cardResponses = user.getCards().stream()
+                .map(cardMapper::toCardResponse)
+                .toList();
+
+        return new UserDetailResponse(
+                response.id(),
+                response.username(),
+                response.roles(),
+                response.isActive(),
+                response.profile(),
+                cardResponses
+        );
     }
 
     @Override
@@ -206,10 +230,8 @@ public class AdminServiceImpl implements AdminService {
         Map<UUID, List<Card>> cardsByOwnerId = cards.stream()
                 .collect(Collectors.groupingBy(card -> card.getOwner().getId()));
 
-        // Мапим каждого пользователя в DTO вручную, подставляя нужный список карт
         List<UserDetailResponse> dtos = users.stream().map(user -> {
             List<Card> userCards = cardsByOwnerId.getOrDefault(user.getId(), Collections.emptyList());
-            // Нам нужен новый метод в маппере
             return userMapper.toUserDetailResponse(user, userCards);
         }).toList();
 

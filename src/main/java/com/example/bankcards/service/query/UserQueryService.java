@@ -27,7 +27,7 @@ public class UserQueryService {
      * @return The found User entity.
      */
     public User findByIdOrThrow(UUID userId) {
-        return userRepository.findById(userId)
+        return userRepository.findById_Admin(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
     }
 

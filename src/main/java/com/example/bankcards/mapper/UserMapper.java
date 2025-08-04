@@ -28,7 +28,7 @@ public interface UserMapper {
 
     @Mapping(source = "user.userProfile", target = "profile")
     @Mapping(source = "user.enabled", target = "isActive")
-    @Mapping(source = "cards", target = "cards")
+    @Mapping(target  = "cards", ignore = true)
     UserDetailResponse toUserDetailResponse(User user, List<Card> cards);
 
 }
