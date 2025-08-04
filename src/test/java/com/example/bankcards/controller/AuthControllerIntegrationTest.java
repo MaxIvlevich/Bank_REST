@@ -68,7 +68,7 @@ public class AuthControllerIntegrationTest extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$.isActive").value(true));
 
         // Проверяем состояние базы данных
-        Optional<User> savedUserOpt = userRepository.findByUsernameWithRoles("testuser"); // Используем обычный findByUsername
+        Optional<User> savedUserOpt = userRepository.findByUsernameWithRoles("testuser");
         assertTrue(savedUserOpt.isPresent(), "User should be saved in the database");
 
         User savedUser = savedUserOpt.get();

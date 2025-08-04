@@ -16,14 +16,16 @@ import java.util.UUID;
  */
 @Repository
 public interface  UserRepository extends JpaRepository<User, UUID> {
+
     /**
-     * Finds an active user by their username and eagerly fetches their roles.
-     * This is crucial for authentication to avoid LazyInitializationException.
+     * Finds a user by their username and eagerly fetches their roles,
+     * but ONLY if the user is active (isActive = true).
+     * This method is the single source of truth for authentication.
      *
      * @param username The username to search for.
      * @return An Optional containing the found active user with roles initialized.
      */
-    @Query("SELECT u FROM User u JOIN FETCH u.roles WHERE u.username = :username")
+    @Query("SELECT u FROM User u JOIN FETCH u.roles WHERE u.username = :username AND u.isEnabled = true")
     Optional<User> findByUsernameWithRoles(@Param("username") String username);;
 
     /**

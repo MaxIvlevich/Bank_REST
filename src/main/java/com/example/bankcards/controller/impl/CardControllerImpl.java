@@ -4,6 +4,7 @@ import com.example.bankcards.controller.CardController;
 import com.example.bankcards.dto.request.TransferRequest;
 import com.example.bankcards.dto.response.CardResponse;
 import com.example.bankcards.dto.response.PagedResponse;
+import com.example.bankcards.dto.response.TransactionResponse;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.service.CardService;
 import lombok.RequiredArgsConstructor;
@@ -46,8 +47,8 @@ public class CardControllerImpl implements CardController{
     }
 
     @Override
-    public ResponseEntity<Void> transferBetweenMyCards(@AuthenticationPrincipal User user, TransferRequest request) {
-        cardService.transferBetweenMyCards(request, user.getId());
-        return ResponseEntity.ok().build();
+    public ResponseEntity<TransactionResponse> transferBetweenMyCards(@AuthenticationPrincipal User user, TransferRequest request) {
+        TransactionResponse response = cardService.transferBetweenMyCards(request, user.getId());
+        return ResponseEntity.ok(response);
     }
 }

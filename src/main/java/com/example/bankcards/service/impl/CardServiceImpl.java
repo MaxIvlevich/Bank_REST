@@ -3,16 +3,17 @@ package com.example.bankcards.service.impl;
 import com.example.bankcards.dto.LockedCards;
 import com.example.bankcards.dto.request.TransferRequest;
 import com.example.bankcards.dto.response.CardResponse;
+import com.example.bankcards.dto.response.TransactionResponse;
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.enums.CardStatus;
 import com.example.bankcards.exception.InsufficientFundsException;
 import com.example.bankcards.exception.InvalidOperationException;
 import com.example.bankcards.exception.ResourceNotFoundException;
 import com.example.bankcards.exception.UnauthorizedOperationException;
+import com.example.bankcards.mapper.CardMapper;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.service.CardService;
 import com.example.bankcards.service.query.CardQueryService;
-import com.example.bankcards.mapper.CardMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -78,15 +79,17 @@ public class CardServiceImpl implements CardService {
 
     @Override
     @Transactional
-    public void transferBetweenMyCards(TransferRequest request, UUID userId) {
+    public TransactionResponse transferBetweenMyCards(TransferRequest request, UUID userId) {
         log.info("TRANSFER_START: [userId={}, fromCardId={}, toCardId={}, amount={}].",
                 userId, request.fromCardId(), request.toCardId(), request.amount());
 
         LockedCards cards = findAndLockActiveCardsForTransfer(request.fromCardId(), request.toCardId());
         validateTransfer(request, cards.fromCard(), cards.toCard(), userId);
-        executeTransfer(request.amount(), cards.fromCard(), cards.toCard());
+        LockedCards updatedCards = executeTransfer(request.amount(), cards.fromCard(), cards.toCard());
 
         log.info("TRANSFER_SUCCESS: [userId={}].", userId);
+
+        return cardMapper.toTransactionResponseDto(updatedCards.fromCard(), updatedCards.toCard());
     }
 
     /**
@@ -94,7 +97,7 @@ public class CardServiceImpl implements CardService {
      */
     private LockedCards findAndLockActiveCardsForTransfer(UUID fromCardId, UUID toCardId) {
         Card fromCard = cardQueryService.findActiveByIdWithLockOrThrow(fromCardId);
-        Card toCard =  cardQueryService.findActiveByIdWithLockOrThrow(toCardId);
+        Card toCard = cardQueryService.findActiveByIdWithLockOrThrow(toCardId);
         return new LockedCards(fromCard, toCard);
     }
 
@@ -122,10 +125,16 @@ public class CardServiceImpl implements CardService {
     /**
      * Executes the actual balance change and saves the cards.
      */
-    private void executeTransfer(BigDecimal amount, Card fromCard, Card toCard) {
+    private LockedCards  executeTransfer(BigDecimal amount, Card fromCard, Card toCard) {
         fromCard.setBalance(fromCard.getBalance().subtract(amount));
         toCard.setBalance(toCard.getBalance().add(amount));
-        cardRepository.saveAll(List.of(fromCard, toCard));
-    }
 
+        List<Card> savedCards = cardRepository.saveAll(List.of(fromCard, toCard));
+
+        Card savedFromCard = savedCards.stream().filter(c -> c.getId().equals(fromCard.getId())).findFirst().orElse(fromCard);
+        Card savedToCard = savedCards.stream().filter(c -> c.getId().equals(toCard.getId())).findFirst().orElse(toCard);
+
+        return new LockedCards(savedFromCard, savedToCard);
+
+    }
 }

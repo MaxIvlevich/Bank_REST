@@ -16,6 +16,7 @@ import com.example.bankcards.mapper.UserProfileMapper;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.service.AdminService;
+import com.example.bankcards.service.RefreshTokenService;
 import com.example.bankcards.service.query.CardQueryService;
 import com.example.bankcards.service.query.UserQueryService;
 import com.example.bankcards.mapper.CardMapper;
@@ -52,6 +53,7 @@ public class AdminServiceImpl implements AdminService {
     private final CardQueryService cardQueryService;
     private final UserQueryService userQueryService;
     private final UserProfileMapper userProfileMapper;
+    private final RefreshTokenService refreshTokenService;
 
     @Override
     @Transactional
@@ -175,6 +177,8 @@ public class AdminServiceImpl implements AdminService {
         log.info("ADMIN_LOCK_USER: [userId={}].", userId);
         User user = userQueryService.findByIdOrThrow(userId);
         user.setEnabled(false);
+        refreshTokenService.deleteByUserId(userId);
+        log.info("ADMIN_LOCK_USER: Refresh token for user {} has been deleted.", userId);
         return userMapper.toUserResponseDto(userRepository.save(user));
     }
 

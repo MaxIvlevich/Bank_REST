@@ -1,6 +1,7 @@
 package com.example.bankcards.mapper;
 
 import com.example.bankcards.dto.response.CardResponse;
+import com.example.bankcards.dto.response.TransactionResponse;
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.util.masking.CardMaskingUtil;
 import org.mapstruct.Mapper;
@@ -32,5 +33,23 @@ public interface CardMapper {
     @Named("maskCardNumber")
     default String maskCardNumber(String cardNumber) {
         return CardMaskingUtil.maskCardNumber(cardNumber);
+    }
+
+    /**
+     * Creates a TransactionResponseDto from the two cards involved in a transfer.
+     *
+     * @param fromCard The source card after the transaction.
+     * @param toCard   The destination card after the transaction.
+     * @return A DTO with the updated balances.
+     */
+    default TransactionResponse toTransactionResponseDto(Card fromCard, Card toCard) {
+        if (fromCard == null || toCard == null) {
+            return null;
+        }
+
+        return new TransactionResponse(
+                fromCard.getBalance(),
+                toCard.getBalance()
+        );
     }
 }

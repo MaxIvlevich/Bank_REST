@@ -15,6 +15,7 @@ import com.example.bankcards.mapper.UserMapper;
 import com.example.bankcards.mapper.UserProfileMapper;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.UserRepository;
+import com.example.bankcards.service.RefreshTokenService;
 import com.example.bankcards.service.query.CardQueryService;
 import com.example.bankcards.service.query.UserQueryService;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,6 +61,8 @@ public class AdminServiceImplTest {
     private CardQueryService cardQueryService;
     @Mock
     private UserProfileMapper userProfileMapper;
+    @Mock
+    private RefreshTokenService refreshTokenService;
 
     private AdminServiceImpl adminService;
 
@@ -77,7 +80,9 @@ public class AdminServiceImplTest {
                 cardStatusManager,
                 cardQueryService,
                 userQueryService,
-                userProfileMapper
+                userProfileMapper,
+                refreshTokenService
+
         );
     }
 

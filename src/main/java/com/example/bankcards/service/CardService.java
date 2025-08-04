@@ -3,6 +3,7 @@ package com.example.bankcards.service;
 import com.example.bankcards.dto.request.CreateCardRequest;
 import com.example.bankcards.dto.request.TransferRequest;
 import com.example.bankcards.dto.response.CardResponse;
+import com.example.bankcards.dto.response.TransactionResponse;
 import com.example.bankcards.entity.enums.CardStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -60,5 +61,5 @@ public interface CardService {
      * @param request DTO containing transfer details (fromCardId, toCardId, amount).
      * @param userId  The ID of the user performing the transfer.
      */
-    void transferBetweenMyCards(TransferRequest request, UUID userId);
+    TransactionResponse transferBetweenMyCards(TransferRequest request, UUID userId);
 }

@@ -3,6 +3,7 @@ package com.example.bankcards.controller;
 import com.example.bankcards.dto.request.TransferRequest;
 import com.example.bankcards.dto.response.CardResponse;
 import com.example.bankcards.dto.response.PagedResponse;
+import com.example.bankcards.dto.response.TransactionResponse;
 import com.example.bankcards.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -47,6 +48,6 @@ public interface CardController {
 
     @Operation(summary = "Transfer between my cards", description = "Transfers a specified amount between two of my cards.")
     @PostMapping("/my/transfer")
-    ResponseEntity<Void> transferBetweenMyCards(@AuthenticationPrincipal User user,
-                                                @Valid @RequestBody TransferRequest request);
+    ResponseEntity<TransactionResponse> transferBetweenMyCards(@AuthenticationPrincipal User user,
+                                                               @Valid @RequestBody TransferRequest request);
 }
