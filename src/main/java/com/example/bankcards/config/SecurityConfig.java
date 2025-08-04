@@ -40,6 +40,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/auth/**",
                                 "/v3/api-docs/**",
+                                "/docs/openapi.yaml",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/api-docs/**").permitAll()

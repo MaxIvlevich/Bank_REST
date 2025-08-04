@@ -1,1 +1,905 @@
-# Здесь будет OpenAPI описание всех доступных эндпоинтов и моделей данных.
+openapi: 3.1.0
+info:
+  title: Banking Card API
+  description: API for managing bank cards and performing transfers.
+  version: "1.0"
+servers:
+  - url: http://localhost:8080
+    description: Generated server url
+tags:
+  - name: Authentication
+    description: Endpoints for user registration and login
+  - name: Card Management
+    description: Endpoints for managing user bank cards
+  - name: Admin Panel
+    description: Endpoints for administrative tasks
+paths:
+  /api/admin/users/{userId}/roles:
+    put:
+      tags:
+        - Admin Panel
+      summary: Update user roles
+      operationId: updateUserRoles
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserRolesRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UserResponseDto"
+      security:
+        - bearerAuth: [ ]
+  /api/admin/users/{userId}/profile:
+    put:
+      tags:
+        - Admin Panel
+      summary: Update user profile
+      operationId: updateUserProfile
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProfileRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UserDetailResponse"
+      security:
+        - bearerAuth: [ ]
+  /api/cards/my/{cardId}/block-request:
+    post:
+      tags:
+        - Card Management
+      summary: Request to block my card
+      description: Submits a request to block one of my cards. The status will be
+        changed to BLOCK_REQUESTED.
+      operationId: requestCardBlock
+      parameters:
+        - name: cardId
+          in: path
+          description: ID of the card to block
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/CardResponse"
+      security:
+        - bearerAuth: [ ]
+  /api/cards/my/transfer:
+    post:
+      tags:
+        - Card Management
+      summary: Transfer between my cards
+      description: Transfers a specified amount between two of my cards.
+      operationId: transferBetweenMyCards
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransferRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/TransactionResponse"
+      security:
+        - bearerAuth: [ ]
+  /api/auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Register a new user
+      description: Creates a new user account. Returns the created user's information.
+      operationId: registerUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegistrationRequest"
+        required: true
+      responses:
+        "200":
+          description: User successfully registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponseDto"
+        "400":
+          description: Invalid input data or username already exists
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UserResponseDto"
+  /api/auth/refresh:
+    post:
+      tags:
+        - Authentication
+      summary: Refresh access token
+      description: Obtains a new access token using a valid refresh token. This endpoint
+        should be called when the access token has expired.
+      operationId: refreshToken
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TokenRefreshRequest"
+        required: true
+      responses:
+        "200":
+          description: Tokens refreshed successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenRefreshResponse"
+        "400":
+          description: "Invalid request (e.g., blank refresh token)"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/TokenRefreshResponse"
+        "403":
+          description: Refresh token is invalid or expired
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/TokenRefreshResponse"
+  /api/auth/logout:
+    post:
+      tags:
+        - Authentication
+      summary: Log out current user
+      description: "Performs a logout for the currently authenticated user. This invalidates\
+        \ the user's refresh token, preventing them from obtaining new access tokens.\
+        \ The current access token will remain valid until it expires."
+      operationId: logoutUser
+      responses:
+        "200":
+          description: Successfully logged out
+          content:
+            '*/*':
+              schema:
+                type: string
+        "401":
+          description: Unauthorized if the user is not authenticated (no valid access
+            token provided)
+          content:
+            '*/*':
+              schema:
+                type: string
+      security:
+        - bearerAuth: [ ]
+  /api/auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Authenticate a user
+      description: Logs in a user and returns JWT access and refresh tokens.
+      operationId: loginUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+        required: true
+      responses:
+        "200":
+          description: User successfully authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JwtResponse"
+        "401":
+          description: Invalid credentials
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/JwtResponse"
+  /api/admin/users/{userId}/unlock:
+    post:
+      tags:
+        - Admin Panel
+      summary: Unlock a user account
+      operationId: unlockUserAccount
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UserResponseDto"
+      security:
+        - bearerAuth: [ ]
+  /api/admin/users/{userId}/lock:
+    post:
+      tags:
+        - Admin Panel
+      summary: Lock a user account
+      operationId: lockUserAccount
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UserResponseDto"
+      security:
+        - bearerAuth: [ ]
+  /api/admin/cards:
+    get:
+      tags:
+        - Admin Panel
+      summary: Find all cards in the system
+      description: "Returns a paginated list of all cards, including inactive."
+      operationId: getAllCards
+      parameters:
+        - name: pageable
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/Pageable"
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PagedResponseCardResponse"
+      security:
+        - bearerAuth: [ ]
+    post:
+      tags:
+        - Admin Panel
+      summary: Create a new card for a user
+      operationId: createCard
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCardRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/CardResponse"
+      security:
+        - bearerAuth: [ ]
+  /api/admin/cards/{cardId}/block/decline:
+    post:
+      tags:
+        - Admin Panel
+      summary: Decline a card block request
+      operationId: declineCardBlock
+      parameters:
+        - name: cardId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/CardResponse"
+      security:
+        - bearerAuth: [ ]
+  /api/admin/cards/{cardId}/block/confirm:
+    post:
+      tags:
+        - Admin Panel
+      summary: Confirm a card block request
+      operationId: confirmCardBlock
+      parameters:
+        - name: cardId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/CardResponse"
+      security:
+        - bearerAuth: [ ]
+  /api/admin/cards/{cardId}/activate:
+    post:
+      tags:
+        - Admin Panel
+      summary: Activate a card
+      operationId: activateCard
+      parameters:
+        - name: cardId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/CardResponse"
+      security:
+        - bearerAuth: [ ]
+  /api/cards/my:
+    get:
+      tags:
+        - Card Management
+      summary: Get my cards
+      description: Returns a paginated list of my active cards.
+      operationId: getMyCards
+      parameters:
+        - name: pageable
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/Pageable"
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PagedResponseCardResponse"
+      security:
+        - bearerAuth: [ ]
+  /api/cards/my/{cardId}:
+    get:
+      tags:
+        - Card Management
+      summary: Get my card by ID
+      description: Returns details of a specific card if it belongs to me.
+      operationId: getMyCardById
+      parameters:
+        - name: cardId
+          in: path
+          description: ID of the card to be fetched
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/CardResponse"
+      security:
+        - bearerAuth: [ ]
+  /api/cards/my/{cardId}/balance:
+    get:
+      tags:
+        - Card Management
+      summary: Get my card's balance
+      description: Returns the current balance of my specific card.
+      operationId: getMyCardBalance
+      parameters:
+        - name: cardId
+          in: path
+          description: ID of the card
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: number
+      security:
+        - bearerAuth: [ ]
+  /api/admin/users:
+    get:
+      tags:
+        - Admin Panel
+      summary: Find all users
+      operationId: getAllUsers
+      parameters:
+        - name: pageable
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/Pageable"
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PagedResponseUserResponseDto"
+      security:
+        - bearerAuth: [ ]
+  /api/admin/users/{userId}:
+    get:
+      tags:
+        - Admin Panel
+      summary: Find user by ID
+      operationId: getUserById
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UserResponseDto"
+      security:
+        - bearerAuth: [ ]
+  /api/admin/users/{userId}/details:
+    get:
+      tags:
+        - Admin Panel
+      summary: Find user by ID with full details
+      description: "Returns detailed information about a user, including their profile\
+        \ and list of cards."
+      operationId: getUserDetailsById
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UserDetailResponse"
+      security:
+        - bearerAuth: [ ]
+  /api/admin/users/{userId}/cards:
+    get:
+      tags:
+        - Admin Panel
+      summary: Find all cards for a specific user
+      description: Returns a paginated list of all cards for a given user.
+      operationId: getAllCardsForUser
+      parameters:
+        - name: userId
+          in: path
+          description: ID of the user
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: pageable
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/Pageable"
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PagedResponseCardResponse"
+      security:
+        - bearerAuth: [ ]
+  /api/admin/users/with-cards:
+    get:
+      tags:
+        - Admin Panel
+      summary: Find all users with their cards
+      description: "Returns a paginated list of all users, including their card lists."
+      operationId: getAllUsersWithCards
+      parameters:
+        - name: pageable
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/Pageable"
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PagedResponseUserDetailResponse"
+      security:
+        - bearerAuth: [ ]
+  /api/admin/cards/status/{status}:
+    get:
+      tags:
+        - Admin Panel
+      summary: Find cards by status
+      description: Returns a paginated list of all cards filtered by status.
+      operationId: getCardsByStatus
+      parameters:
+        - name: status
+          in: path
+          description: Card status
+          required: true
+          schema:
+            type: string
+            enum:
+              - ACTIVE
+              - BLOCK_REQUESTED
+              - BLOCKED
+              - EXPIRED
+        - name: pageable
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/Pageable"
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PagedResponseCardResponse"
+      security:
+        - bearerAuth: [ ]
+  /api/admin/cards/{cardId}:
+    delete:
+      tags:
+        - Admin Panel
+      summary: Soft-delete a card
+      operationId: softDeleteCard
+      parameters:
+        - name: cardId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: No Content
+      security:
+        - bearerAuth: [ ]
+components:
+  schemas:
+    UpdateUserRolesRequest:
+      type: object
+      properties:
+        roles:
+          type: array
+          items:
+            type: string
+            enum:
+              - ROLE_USER
+              - ROLE_ADMIN
+          minItems: 1
+          uniqueItems: true
+      required:
+        - roles
+    UserResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        username:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+            enum:
+              - ROLE_USER
+              - ROLE_ADMIN
+          uniqueItems: true
+        isActive:
+          type: boolean
+    UpdateProfileRequest:
+      type: object
+      properties:
+        firstName:
+          type: string
+          maxLength: 50
+          minLength: 2
+        lastName:
+          type: string
+          maxLength: 50
+          minLength: 2
+        email:
+          type: string
+        phoneNumbe:
+          type: string
+    CardResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        maskedCardNumber:
+          type: string
+        expirationDate:
+          type: string
+        status:
+          type: string
+          enum:
+            - ACTIVE
+            - BLOCK_REQUESTED
+            - BLOCKED
+            - EXPIRED
+        balance:
+          type: number
+    UserDetailResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        username:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+            enum:
+              - ROLE_USER
+              - ROLE_ADMIN
+          uniqueItems: true
+        isActive:
+          type: boolean
+        profile:
+          $ref: "#/components/schemas/UserProfileDto"
+        cards:
+          type: array
+          items:
+            $ref: "#/components/schemas/CardResponse"
+    UserProfileDto:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        phoneNumber:
+          type: string
+    TransferRequest:
+      type: object
+      properties:
+        fromCardId:
+          type: string
+          format: uuid
+        toCardId:
+          type: string
+          format: uuid
+        amount:
+          type: number
+      required:
+        - amount
+        - fromCardId
+        - toCardId
+    TransactionResponse:
+      type: object
+      properties:
+        fromCard:
+          type: number
+        toCard:
+          type: number
+    RegistrationRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          maxLength: 50
+          minLength: 3
+        password:
+          type: string
+          maxLength: 255
+          minLength: 8
+      required:
+        - password
+        - username
+    TokenRefreshResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+    TokenRefreshRequest:
+      type: object
+      properties:
+        refreshToken:
+          type: string
+          minLength: 1
+      required:
+        - refreshToken
+    JwtResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        id:
+          type: string
+          format: uuid
+        username:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+          uniqueItems: true
+    LoginRequest:
+      type: object
+      properties:
+        identifier:
+          type: string
+          minLength: 1
+        password:
+          type: string
+          minLength: 1
+      required:
+        - identifier
+        - password
+    CreateCardRequest:
+      type: object
+      properties:
+        ownerId:
+          type: string
+          format: uuid
+        cardNumber:
+          type: string
+          minLength: 1
+          pattern: "^\\d{16}$"
+        expirationDate:
+          type: string
+        initialBalance:
+          type: number
+          minimum: 0.0
+      required:
+        - cardNumber
+        - expirationDate
+        - ownerId
+    Pageable:
+      type: object
+      properties:
+        page:
+          type: integer
+          format: int32
+          minimum: 0
+        size:
+          type: integer
+          format: int32
+          minimum: 1
+        sort:
+          type: array
+          items:
+            type: string
+    PagedResponseCardResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/CardResponse"
+        page_number:
+          type: integer
+          format: int32
+        page_size:
+          type: integer
+          format: int32
+        total_elements:
+          type: integer
+          format: int64
+        total_pages:
+          type: integer
+          format: int32
+        is_last:
+          type: boolean
+    PagedResponseUserResponseDto:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserResponseDto"
+        page_number:
+          type: integer
+          format: int32
+        page_size:
+          type: integer
+          format: int32
+        total_elements:
+          type: integer
+          format: int64
+        total_pages:
+          type: integer
+          format: int32
+        is_last:
+          type: boolean
+    PagedResponseUserDetailResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserDetailResponse"
+        page_number:
+          type: integer
+          format: int32
+        page_size:
+          type: integer
+          format: int32
+        total_elements:
+          type: integer
+          format: int64
+        total_pages:
+          type: integer
+          format: int32
+        is_last:
+          type: boolean
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
